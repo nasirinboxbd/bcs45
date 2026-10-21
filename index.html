@@ -161,8 +161,10 @@ $('rel').onchange=relSet;document.querySelectorAll('input[name=sex]').forEach(r=
 const BM=['বৈশাখ','জ্যৈষ্ঠ','আষাঢ়','শ্রাবণ','ভাদ্র','আশ্বিন','কার্তিক','অগ্রহায়ণ','পৌষ','মাঘ','ফাল্গুন','চৈত্র'],GM=['জানুয়ারি','ফেব্রুয়ারি','মার্চ','এপ্রিল','মে','জুন','জুলাই','আগস্ট','সেপ্টেম্বর','অক্টোবর','নভেম্বর','ডিসেম্বর'],WD=['রবিবার','সোমবার','মঙ্গলবার','বুধবার','বৃহস্পতিবার','শুক্রবার','শনিবার'];
 const ord=d=>d===1?'১লা':d===2?'২রা':d===3?'৩রা':d===4?'৪ঠা':d<=18?toBn(d)+'ই':toBn(d)+'শে';
 function dateText(v){if(!v)return'';const[y,m,d]=v.split('-').map(Number),dt=Date.UTC(y,m-1,d);
- const y0=(m>4||(m===4&&d>=14))?y:y-1,off=Math.round((dt-Date.UTC(y0,3,14))/864e5),lp=(y0+1)%4===0&&((y0+1)%100!==0||(y0+1)%400===0);
- const L=[31,31,31,31,31,30,30,30,30,30,lp?30:29,30];let bm=0,bd=off;while(bd>=L[bm]){bd-=L[bm];bm++}
+ /* বাংলা দিন সকাল থেকে পরদিন সকাল পর্যন্ত: নির্বাচিত ইংরেজি তারিখের শুরুতে আগের বাংলা দিনই চলমান */
+ const bt=dt-864e5,bs=new Date(bt),by=bs.getUTCFullYear(),bmo=bs.getUTCMonth()+1,bdy=bs.getUTCDate();
+ const y0=(bmo>4||(bmo===4&&bdy>=14))?by:by-1,off=Math.round((bt-Date.UTC(y0,3,14))/864e5),lp=(y0+1)%4===0&&((y0+1)%100!==0||(y0+1)%400===0);
+ const L=[31,31,31,31,31,30,30,30,30,30,lp?30:29,30];let bm=0,bd=off;while(bm<11&&bd>=L[bm]){bd-=L[bm];bm++}
  return toBn(String(bd+1).padStart(2,'0'))+' '+BM[bm]+', '+toBn(y0-593)+' বঙ্গাব্দ/'+ord(d)+' '+GM[m-1]+', '+toBn(y)+' খ্রিষ্টাব্দ রোজ '+WD[new Date(dt).getUTCDay()]}
 $('date').onchange=()=>$('datefull').value=dateText($('date').value);
 {const n=new Date();$('date').value=n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');$('datefull').value=dateText($('date').value)}
